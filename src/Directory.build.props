@@ -1,0 +1,11 @@
+﻿<Project>
+  <PropertyGroup>
+    <IsDeterministic>true</IsDeterministic>
+    <LangVersion>9.0</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!--<NoWarn>1591;1701;1702</NoWarn>
+    <Authors>shipwreck.jp</Authors>
+    <Company />
+    <Copyright>Copyright © 2016-2019 shipwreck.jp</Copyright>-->
+  </PropertyGroup>
+</Project>
