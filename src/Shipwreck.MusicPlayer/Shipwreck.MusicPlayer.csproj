@@ -6,4 +6,8 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="ID3" Version="0.6.0" />
+  </ItemGroup>
+
 </Project>

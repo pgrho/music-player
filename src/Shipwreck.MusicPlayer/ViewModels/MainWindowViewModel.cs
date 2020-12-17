@@ -2,5 +2,6 @@
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        public PlaylistViewModel Playlist { get; } = new PlaylistViewModel();
     }
 }
