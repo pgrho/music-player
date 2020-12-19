@@ -1,4 +1,6 @@
 ﻿using Microsoft.Win32;
+using Shipwreck.MusicPlayer.Views;
+using System;
 using System.Windows;
 
 namespace Shipwreck.MusicPlayer.ViewModels
@@ -19,5 +21,14 @@ namespace Shipwreck.MusicPlayer.ViewModels
             }
             return null;
         }
+
+        public void Play(MusicViewModel music)
+            => (Application.Current?.MainWindow as MainWindow)?.Play(music);
+
+        public void Pause(MusicViewModel music)
+            => (Application.Current?.MainWindow as MainWindow)?.Pause(music);
+
+        public void Seek(TimeSpan position)
+            => (Application.Current?.MainWindow as MainWindow)?.Seek(position);
     }
 }

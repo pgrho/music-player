@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows.Input;
 
 namespace Shipwreck.MusicPlayer.ViewModels
@@ -8,6 +9,18 @@ namespace Shipwreck.MusicPlayer.ViewModels
         public IInteractionService Interaction { get; } = new InteractionService();
 
         public PlaylistViewModel Playlist { get; } = new PlaylistViewModel();
+
+        #region CurrentTrack
+
+        private MusicViewModel _CurrentTrack;
+
+        public MusicViewModel CurrentTrack
+        {
+            get => _CurrentTrack;
+            private set => SetProperty(ref _CurrentTrack, value);
+        }
+
+        #endregion CurrentTrack
 
         #region AddTrackCommand
 
@@ -30,5 +43,56 @@ namespace Shipwreck.MusicPlayer.ViewModels
             });
 
         #endregion AddTrackCommand
+
+        #region PlayTrackCommand
+
+        private ICommand _PlayTrackCommand;
+
+        public ICommand PlayTrackCommand
+            => _PlayTrackCommand
+            ??= new ParameteredCommand(p =>
+            {
+                if (p is MusicViewModel m)
+                {
+                    if (_CurrentTrack != m)
+                    {
+                        if (_CurrentTrack != null)
+                        {
+                            _CurrentTrack.IsPlaying = false;
+                            _CurrentTrack.Position = null;
+                            Interaction.Pause(_CurrentTrack);
+                        }
+                        CurrentTrack = m;
+
+                        m.IsPlaying = true;
+                        Interaction.Play(m);
+                        Interaction.Seek(TimeSpan.Zero);
+                    }
+                    else if (!m.IsPlaying)
+                    {
+                        m.IsPlaying = true;
+                        Interaction.Play(m);
+                    }
+                }
+            });
+
+        #endregion PlayTrackCommand
+
+        #region PauseTrackCommand
+
+        private ICommand _PauseTrackCommand;
+
+        public ICommand PauseTrackCommand
+            => _PauseTrackCommand
+            ??= new ParameteredCommand(p =>
+            {
+                if (p is MusicViewModel m)
+                {
+                    m.IsPlaying = false;
+                    Interaction.Pause(m);
+                }
+            });
+
+        #endregion PauseTrackCommand
     }
 }

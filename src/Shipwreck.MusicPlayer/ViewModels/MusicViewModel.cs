@@ -1,4 +1,5 @@
 ﻿using Id3;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,6 +31,8 @@ namespace Shipwreck.MusicPlayer.ViewModels
                     Album = tag?.Album.Value?.Trim('\0');
                     Title = tag?.Title?.Value?.Trim('\0');
                     Artist = tag?.Artists?.Value?.FirstOrDefault()?.Trim('\0');
+
+                    Duration = tag?.Length?.Value;
                 }
             });
 
@@ -75,6 +78,42 @@ namespace Shipwreck.MusicPlayer.ViewModels
 
         #endregion Artist
 
+        #region Duration
+
+        private TimeSpan? _Duration;
+
+        public TimeSpan? Duration
+        {
+            get => BeginLoad()._Duration;
+            private set => SetProperty(ref _Duration, value);
+        }
+
+        #endregion Duration
+
         #endregion Tag
+
+        #region IsPlaying
+
+        private bool _IsPlaying;
+
+        public bool IsPlaying
+        {
+            get => _IsPlaying;
+            internal set => SetProperty(ref _IsPlaying, value);
+        }
+
+        #endregion IsPlaying
+
+        #region Position
+
+        private TimeSpan? _Position;
+
+        public TimeSpan? Position
+        {
+            get => _Position;
+            internal set => SetProperty(ref _Position, value);
+        }
+
+        #endregion Position
     }
 }

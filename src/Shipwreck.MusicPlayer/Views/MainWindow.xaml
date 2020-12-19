@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:vm="clr-namespace:Shipwreck.MusicPlayer.ViewModels"
+    xmlns:v="clr-namespace:Shipwreck.MusicPlayer.Views"
     mc:Ignorable="d"
     Title="MainWindow"
     Height="450"
@@ -29,9 +30,78 @@
                     Command="{Binding AddTrackCommand}" />
             </MenuItem>
         </Menu>
+        <Grid
+            DockPanel.Dock="Bottom"
+            Visibility="{Binding CurrentTrack, Converter={StaticResource NullToFalseConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="Auto" />
+                <ColumnDefinition
+                    Width="Auto" />
+                <ColumnDefinition />
+                <ColumnDefinition
+                    Width="Auto" />
+                <ColumnDefinition
+                    Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button>
+                <Button.Style>
+                    <Style
+                        TargetType="Button"
+                        BasedOn="{StaticResource MahApps.Styles.Button.Square}">
+                        <Setter
+                            Property="Command"
+                            Value="{Binding PlayTrackCommand}" />
+                        <Setter
+                            Property="CommandParameter"
+                            Value="{Binding CurrentTrack}" />
+                        <Setter
+                            Property="Content"
+                            Value="&gt;" />
+                        <Style.Triggers>
+                            <DataTrigger
+                                Binding="{Binding CurrentTrack.IsPlaying}"
+                                Value="True">
+                                <Setter
+                                    Property="Command"
+                                    Value="{Binding PauseTrackCommand}" />
+                                <Setter
+                                    Property="Content"
+                                    Value="||" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <TextBlock
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Text="{Binding CurrentTrack.Title}" />
+            <TextBlock
+                Grid.Column="3"
+                VerticalAlignment="Center"
+                Visibility="{Binding CurrentTrack.IsPlaying, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Text="{Binding CurrentTrack.Position, StringFormat='m&quot;:&quot;ss&quot; /&quot;'}" />
+            <TextBlock
+                Grid.Column="4"
+                VerticalAlignment="Center"
+                Text="{Binding CurrentTrack.Duration, StringFormat='m&quot;:&quot;ss'}" />
+        </Grid>
         <DataGrid
             AutoGenerateColumns="False"
             ItemsSource="{Binding Playlist.Items}">
+            <DataGrid.RowStyle>
+                <Style
+                    TargetType="DataGridRow"
+                    BasedOn="{StaticResource MahApps.Styles.DataGridRow}">
+                    <Setter
+                        Property="v:ControlBehaviors.DoubleClickCommand"
+                        Value="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.PlayTrackCommand}" />
+                    <Setter
+                        Property="v:ControlBehaviors.DoubleClickCommandParameter"
+                        Value="{Binding}" />
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTemplateColumn
                     Header="Title">
@@ -55,10 +125,16 @@
                 </DataGridTemplateColumn>
                 <DataGridTextColumn
                     Header="Artist"
-                    Binding="{Binding Artist}" />
+                    IsReadOnly="True"
+                    Binding="{Binding Artist, Mode=OneWay}" />
                 <DataGridTextColumn
                     Header="Album"
-                    Binding="{Binding Album}" />
+                    IsReadOnly="True"
+                    Binding="{Binding Album, Mode=OneWay}" />
+                <DataGridTextColumn
+                    Header="Duration"
+                    IsReadOnly="True"
+                    Binding="{Binding Duration, StringFormat='m&quot;:&quot;ss', Mode=OneWay}" />
             </DataGrid.Columns>
         </DataGrid>
     </DockPanel>
