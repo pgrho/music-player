@@ -16,6 +16,10 @@
     </mah:MetroWindow.DataContext>
     <mah:MetroWindow.InputBindings>
         <KeyBinding
+            Key="O"
+            Modifiers="Ctrl"
+            Command="{Binding OpenPlaylistCommand}" />
+        <KeyBinding
             Key="A"
             Modifiers="Ctrl"
             Command="{Binding AddTrackCommand}" />
@@ -25,6 +29,9 @@
             DockPanel.Dock="Top">
             <MenuItem
                 Header="File(_F)">
+                <MenuItem
+                    Header="Open Playlist(_O)"
+                    Command="{Binding OpenPlaylistCommand}" />
                 <MenuItem
                     Header="Add Track(_A)"
                     Command="{Binding AddTrackCommand}" />
@@ -76,7 +83,7 @@
             <TextBlock
                 Grid.Column="1"
                 VerticalAlignment="Center"
-                Text="{Binding CurrentTrack.Title}" />
+                Text="{Binding CurrentTrack.TitleOrFileName}" />
             <TextBlock
                 Grid.Column="3"
                 VerticalAlignment="Center"
@@ -103,26 +110,10 @@
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>
-                <DataGridTemplateColumn
-                    Header="Title">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock
-                                x:Name="tb"
-                                Text="{Binding Title}" />
-                            <DataTemplate.Triggers>
-                                <DataTrigger
-                                    Binding="{Binding Title}"
-                                    Value="{x:Null}">
-                                    <Setter
-                                        TargetName="tb"
-                                        Property="TextBlock.Text"
-                                        Value="{Binding FileName}" />
-                                </DataTrigger>
-                            </DataTemplate.Triggers>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                <DataGridTextColumn
+                    Header="Title"
+                    IsReadOnly="True"
+                    Binding="{Binding TitleOrFileName, Mode=OneWay}" />
                 <DataGridTextColumn
                     Header="Artist"
                     IsReadOnly="True"

@@ -4,7 +4,9 @@ namespace Shipwreck.MusicPlayer.ViewModels
 {
     public interface IInteractionService
     {
-        string[] OpenFiles();
+        string OpenPlaylist();
+
+        string[] OpenTracks();
 
         void Play(MusicViewModel music);
 

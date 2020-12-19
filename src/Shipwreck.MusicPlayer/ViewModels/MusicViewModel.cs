@@ -27,12 +27,17 @@ namespace Shipwreck.MusicPlayer.ViewModels
                 using (var fs = new FileStream(FullPath, FileMode.Open))
                 using (var mp3 = new Mp3(fs, Mp3Permissions.Read))
                 {
-                    var tag = mp3.GetTag(Id3TagFamily.Version2X);
-                    Album = tag?.Album.Value?.Trim('\0');
-                    Title = tag?.Title?.Value?.Trim('\0');
-                    Artist = tag?.Artists?.Value?.FirstOrDefault()?.Trim('\0');
+                    Duration = mp3.Audio.Duration;
 
-                    Duration = tag?.Length?.Value;
+                    try
+                    {
+                        var tag = mp3.GetTag(Id3TagFamily.Version2X);
+
+                        Album = tag?.Album.Value?.Trim('\0');
+                        Title = tag?.Title?.Value?.Trim('\0');
+                        Artist = tag?.Artists?.Value?.FirstOrDefault()?.Trim('\0');
+                    }
+                    catch { }
                 }
             });
 
@@ -61,8 +66,17 @@ namespace Shipwreck.MusicPlayer.ViewModels
         public string Title
         {
             get => BeginLoad()._Title;
-            private set => SetProperty(ref _Title, value);
+            private set
+            {
+                if (SetProperty(ref _Title, value))
+                {
+                    RaisePropertyChanged(nameof(TitleOrFileName));
+                }
+            }
         }
+
+        public string TitleOrFileName
+            => Title ?? FileName;
 
         #endregion Title
 

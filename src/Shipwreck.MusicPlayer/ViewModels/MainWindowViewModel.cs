@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shipwreck.MusicPlayer.Models;
+using System;
 using System.Linq;
 using System.Windows.Input;
 
@@ -8,7 +9,17 @@ namespace Shipwreck.MusicPlayer.ViewModels
     {
         public IInteractionService Interaction { get; } = new InteractionService();
 
-        public PlaylistViewModel Playlist { get; } = new PlaylistViewModel();
+        #region Playlist
+
+        private PlaylistViewModel _Playlist;
+
+        public PlaylistViewModel Playlist
+        {
+            get => _Playlist ??= new PlaylistViewModel();
+            private set => SetProperty(ref _Playlist, value);
+        }
+
+        #endregion Playlist
 
         #region CurrentTrack
 
@@ -22,6 +33,39 @@ namespace Shipwreck.MusicPlayer.ViewModels
 
         #endregion CurrentTrack
 
+        #region OpenPlaylistCommand
+
+        private ICommand _OpenPlaylistCommand;
+
+        public ICommand OpenPlaylistCommand
+            => _OpenPlaylistCommand ??= new SimpleCommand(() =>
+            {
+                var pl = Interaction.OpenPlaylist();
+                if (!string.IsNullOrEmpty(pl))
+                {
+                    try
+                    {
+                        var pvm = new PlaylistViewModel();
+                        foreach (var e in M3uParser.Load(pl))
+                        {
+                            if (e.Uri.IsFile)
+                            {
+                                pvm.Items.Add(new MusicViewModel(e.Uri.LocalPath));
+                            }
+                        }
+                        if (CurrentTrack?.IsPlaying == true)
+                        {
+                            PauseTrackCommand.Execute(CurrentTrack);
+                        }
+                        Playlist = pvm;
+                        CurrentTrack = pvm.Items.FirstOrDefault();
+                    }
+                    catch { }
+                }
+            });
+
+        #endregion OpenPlaylistCommand
+
         #region AddTrackCommand
 
         private ICommand _AddTrackCommand;
@@ -29,14 +73,16 @@ namespace Shipwreck.MusicPlayer.ViewModels
         public ICommand AddTrackCommand
             => _AddTrackCommand ??= new SimpleCommand(() =>
             {
-                var fs = Interaction.OpenFiles();
+                var fs = Interaction.OpenTracks();
                 if (fs?.Length > 0)
                 {
                     foreach (var f in fs)
                     {
                         if (!Playlist.Items.Any(e => e.FullPath == f))
                         {
-                            Playlist.Items.Add(new MusicViewModel(f));
+                            var m = new MusicViewModel(f);
+                            Playlist.Items.Add(m);
+                            CurrentTrack ??= m;
                         }
                     }
                 }
